@@ -2,6 +2,7 @@ FROM ubuntu:xenial
 
 RUN apt-get update -y -qq \
     && apt-get -y install --no-install-recommends \
+      ghostscript \
       lmodern \
       make \
       texlive \
