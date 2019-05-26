@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 
 RUN apt-get update -y -qq \
     && apt-get -y install --no-install-recommends \
@@ -18,5 +18,6 @@ RUN apt-get update -y -qq \
 VOLUME /paper
 WORKDIR /paper
 
-ENTRYPOINT ["bash", "-c"]
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
