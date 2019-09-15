@@ -1,5 +1,9 @@
 FROM ubuntu:bionic
 
+RUN sed -e \
+  's/http:\/\/archive\.ubuntu\.com/http:\/\/us-east-1.ec2.archive.ubuntu.com/' \
+  -i /etc/apt/sources.list
+
 RUN apt-get update -y -qq \
     && apt-get -y install --no-install-recommends \
       ghostscript \
@@ -14,6 +18,37 @@ RUN apt-get update -y -qq \
     && kanji-config-updmap-sys ipaex \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update -y -qq \
+    && apt-get -y install --no-install-recommends \
+      autoconf \
+      gcc \
+      git \
+      libc-dev \
+      libjpeg-turbo8-dev \
+      wget \
+    && cd /tmp \
+    && git clone --depth=1 -b ghostpdl-9.28rc2 git://git.ghostscript.com/ghostpdl.git \
+    && cd ghostpdl \
+    && ./autogen.sh \
+      CFLAGS="-O3 -march=broadwell" \
+      --prefix=/usr \
+      --disable-cups \
+      --disable-gtk \
+      --with-memory-alignment=8 \
+    && make -j \
+    && make install \
+    && apt-get -y purge \
+      autoconf \
+      gcc \
+      git \
+      libc-dev \
+      libjpeg-turbo8-dev \
+      wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/ghostpdl
+
 
 VOLUME /paper
 WORKDIR /paper
