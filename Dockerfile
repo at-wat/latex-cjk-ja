@@ -19,6 +19,7 @@ RUN apt-get update -y -qq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+ARG MAKE_JOBS=-j1
 RUN apt-get update -y -qq \
     && apt-get -y install --no-install-recommends \
       autoconf \
@@ -31,12 +32,13 @@ RUN apt-get update -y -qq \
     && git clone --depth=1 -b ghostpdl-9.28rc2 git://git.ghostscript.com/ghostpdl.git \
     && cd ghostpdl \
     && ./autogen.sh \
-      CFLAGS="-O3 -march=broadwell" \
+      CFLAGS="-O3 -march=ivybridge" \
       --prefix=/usr \
       --disable-cups \
       --disable-gtk \
       --with-memory-alignment=8 \
-    && make -j \
+    && echo "parallel jobs: ${MAKE_JOBS}" \
+    && make ${MAKE_JOBS} \
     && make install \
     && apt-get -y purge \
       autoconf \
